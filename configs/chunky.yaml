@@ -1,88 +1,89 @@
 name: Chunky
 game_type: jeopardy
+description: I Think You Should Leave Trivia
 categories:
-  - name: Category 1
+  - name: Fashion Police
     questions:
-      - question: Question 1
-        answer: Answer 1
+      - question: This high-end measnwear brand can be found at the Shops at the Creek
+        answer: Dan Flashes
         points: 100
-      - question: Question 2
-        answer: Answer 2
+      - question: These jeans have a size 54 waist, 10 inch legs
+        answer: Chode Jeans
         points: 200
-      - question: Question 3
-        answer: Answer 3
+      - question: Worn by rappers, these jeans have a characteristic spatter dying pattern.
+        answer: Calico Cut Pants
         points: 300
-      - question: Question 4
-        answer: Answer 4
+      - question: This shirt, not a joke, is designed for men whose shirts get wrecked from being adjusted
+        answer: TC Tuggers
         points: 400
-      - question: Question 5
-        answer: Answer 5
+      - question: This hat adorned the heads of mobsters in this year's hot new Gangster movie
+        answer: Stanzo Brand Fedoras
         points: 500
-  - name: Category 2
+  - name: It's Dinner Time
     questions:
-      - question: Question 1
-        answer: Answer 1
+      - question: It's safe to eat paper, but it's not safe to eat
+        answer: Mud Pie
         points: 100
-      - question: Question 2
-        answer: Answer 2
+      - question: This food item has to be shared equally, you can't just eat all the ones with the meat and cheese
+        answer: Fully Loaded Nachos
         points: 200
-      - question: Question 3
-        answer: Answer 3
+      - question: This soup needs to be cold otherwise you will burn your mouth
+        answer: Gazpacho
         points: 300
-      - question: Question 4
-        answer: Answer 4
+      - question: This food item has been banned from Truffoni's
+        answer: Sloppy Steak
         points: 400
-      - question: Question 5
-        answer: Answer 5
+      - question: The number of coffees you get when you order 55 burgers, 55 fries, 55 tacos, and 55 cokes
+        answer: 100 coffees
         points: 500
-  - name: Category 3
+  - name: On TV
     questions:
-      - question: Question 1
-        answer: Answer 1
+      - question: 
+        answer: 
         points: 100
-      - question: Question 2
-        answer: Answer 2
+      - question: This talk show is hosted by Barch Barley, who be on his phone for hours and hours
+        answer: Barley Tonight
         points: 200
-      - question: Question 3
-        answer: Answer 3
+      - question: Girls over 60lbs are safe to play with this doll which contains a low, low dose of poison
+        answer: Tammy Craps
         points: 300
-      - question: Question 4
-        answer: Answer 4
+      - question: 
+        answer: 
         points: 400
-      - question: Question 5
-        answer: Answer 5
+      - question: This commercial introduced pop hit Moon River Rock to the world
+        answer: Laser Spine Specialists
         points: 500
-  - name: Category 4
+  - name: Corporate America
     questions:
-      - question: Question 1
-        answer: Answer 1
+      - question:
+        answer:
         points: 100
-      - question: Question 2
-        answer: Answer 2
+      - question:
+        answer:
         points: 200
-      - question: Question 3
-        answer: Answer 3
+      - question: This car company put together a focus group to learn more about steering wheel preferences
+        answer: Ford
         points: 300
-      - question: Question 4
-        answer: Answer 4
+      - question: 
+        answer: 
         points: 400
-      - question: Question 5
-        answer: Answer 5
+      - question: This career may cause distracted driving
+        answer: Tables
         points: 500
-  - name: Category 5
+  - name: What did he say?
     questions:
-      - question: Question 1
-        answer: Answer 1
+      - question: On the adult ghost tour you can say this one word.  
+        answer: Jizz
         points: 100
-      - question: Question 2
-        answer: Answer 2
+      - question:
+        answer:
         points: 200
-      - question: Question 3
-        answer: Answer 3
+      - question:
+        answer:
         points: 300
-      - question: Question 4
-        answer: Answer 4
+      - question:
+        answer:
         points: 400
-      - question: Question 5
-        answer: Answer 5
+      - question: 
+        answer:
         points: 500

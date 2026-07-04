@@ -11,8 +11,10 @@ This repo uses a Python FastAPI backend to serve a trivia game for multiple play
 
 ## Specs
 
-Specs are documents that describe how the game should be implemented and are used to generate code. 
+Specs are documents that describe how the game should be implemented and are used to generate code. All specs can be found in the `specs/` directory.
+
+- `backend.md`: Backend specifications
+- `game_configs.md`: Game config specifications
 - `game_types.md`: Game type specifications
 - `personas.md`: Persona specifications
 - `interfaces.md`: User interface specifications
-- `backend.md`: Backend specifications

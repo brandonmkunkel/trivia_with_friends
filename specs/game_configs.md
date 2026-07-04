@@ -4,5 +4,22 @@ The game configs for individual games are defined as YAML in the `configs/` dire
 
 ## Schemas
 
+### Base game config
+
+All games inherit from this base config schema.
+
 ```yaml
+name: string
+game_type: string
+```
+
+### Jeopardy
+
+```yaml
+categories:
+  - name: string
+    questions:
+      - question: string
+        answer: string
+        points: int
 ```

@@ -1,0 +1,33 @@
+game_type: jeopardy
+name: Chunky
+categories:
+  - name: Category 1
+    questions:
+      - question: Question 1
+        answer: Answer 1
+      - question: Question 2
+        answer: Answer 2
+  - name: Category 2
+    questions:
+      - question: Question 3
+        answer: Answer 3
+      - question: Question 4
+        answer: Answer 4
+  - name: Category 3
+    questions:
+      - question: Question 3
+        answer: Answer 3
+      - question: Question 4
+        answer: Answer 4
+  - name: Category 4
+    questions:
+      - question: Question 3
+        answer: Answer 3
+      - question: Question 4
+        answer: Answer 4
+  - name: Category 5
+    questions:
+      - question: Question 3
+        answer: Answer 3
+      - question: Question 4
+        answer: Answer 4

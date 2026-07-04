@@ -1,19 +1,19 @@
 # Agents
 
-This repo uses a Python FastAPI backend to serve a trivia game for multiple players. The front end is a web application that can be run locally or hosted on a server.
+This repo uses a Python FastAPI backend to serve trivia games for multiple players. The front end is a web application that can be run locally or hosted on a server.
 
 ## Structure
 
-- `configs`: Configuration files for specific versions of the trivia game. 
-- `media`: Media files used by the trivia game, images, audio, etc.
-- `src`: Source code for the trivia server application. Uses FastAPI to serve the trivia game, manages game state, and handles business logic. This is where the core logic of the trivia game lives.
+- `configs`: Configuration files for specific versions of the game. 
+- `media`: Media files used by the game, images, audio, etc.
+- `src`: Source code for the server application. Uses FastAPI to serve the game, manages game state, and handles business logic. This is where the core logic of the game lives.
 - `ui`: Source code for the web application
 
 ## Specs
 
 Specs are documents that describe how the game should be implemented and are used to generate code. All specs can be found in the `specs/` directory.
 
-- `architecture.md`: Architectural overviews and design decisions. 
+- `architecture.md`: Architectural overviews and design decisions
 - `backend.md`: Backend specifications, including API endpoints, data models, and business logic.
 - `frontend.md`: User interface specifications, including UI components and interactions.
 - `game_configs.md`: Game config specifications, including game schemas and config options.
@@ -21,3 +21,10 @@ Specs are documents that describe how the game should be implemented and are use
 - `game_state.md`: Game state specifications, including game state models and state transitions.
 - `networking.md`: Networking specifications, including WebSocket implementation details.
 - `user_personas.md`: Persona specifications, including user roles and behaviors.
+
+## Python Development
+- Run the server with `make run`
+- Install dependencies with `make install`
+- Always format with `make fmt`
+- Run all tests (both backend and extension) with `make test`
+- Always import packages at top of file, never inside a function

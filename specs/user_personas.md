@@ -2,7 +2,7 @@
 
 ## Host
 
-The person running the trivia game. This person will be on a TV and will be using a mouse to navigate the game. 
+The person running the game. This person will be on a TV and will be using a mouse to navigate the game. 
 
 ## Player
 

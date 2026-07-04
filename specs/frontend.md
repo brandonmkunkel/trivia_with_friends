@@ -23,6 +23,8 @@ Some games will have different features than others, and the game screen will re
 
 Each player while in an active game will use the same player screen to view questions, buzz in, and answer questions. This screen will change dynamically based on the game type that is being played.
 
+A player should be able to leave and return to the player screen at will without affecting the game or losing their info. 
+
 ## Host Screen
 
 The host will get a screen to control the game, including progressing the game to the next question, revealing answers, and ending the game, restarting the game. 

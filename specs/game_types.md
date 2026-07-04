@@ -1,5 +1,7 @@
 # Game Types
 
+For seeing game schemas and config options, see `specs/game_configs.md`.
+
 ## Jeopardy
 
 A Jeopardy style game with multiple rounds and categories. Players buzz in to answer questions, first person to buzz in gets to answer. If they get it right, they get points. If they get it wrong, they lose points. 

@@ -14,7 +14,12 @@ def load_game_config(config_path: str) -> GameState:
         for q_idx, q_data in enumerate(cat_data.get("questions", [])):
             q_id = f"q_{cat_idx}_{q_idx}"
             question = Question(
-                id=q_id, question=q_data["question"], answer=q_data["answer"], points=q_data["points"], completed=False
+                id=q_id,
+                question=q_data["question"],
+                answer=q_data["answer"],
+                points=q_data["points"],
+                actual_points=q_data.get("actual_points"),
+                completed=False,
             )
             questions.append(question)
         category = Category(name=cat_data["name"], questions=questions)

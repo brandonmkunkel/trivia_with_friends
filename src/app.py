@@ -1,4 +1,5 @@
 import os
+import socket
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
@@ -11,6 +12,30 @@ app = FastAPI(
     description="A phone-based game server API.",
     version="0.1.0",
 )
+
+
+def get_local_ip() -> str:
+    """Helper to retrieve the host machine's actual local LAN IP address."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Connect to an external address to resolve local interface (does not send packets)
+        s.connect(("10.255.255.255", 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = "127.0.0.1"
+    finally:
+        s.close()
+    return IP
+
+
+def get_enriched_state() -> dict:
+    """Helper to get enriched game state with current question and host IP."""
+    state_dict = game_manager.state.model_dump()
+    current_q = game_manager.get_question(game_manager.state.current_question_id)
+    state_dict["current_question"] = current_q.model_dump() if current_q else None
+    state_dict["host_ip"] = get_local_ip()
+    return state_dict
+
 
 # Initialize GameManager with default config
 config_path = os.path.join(os.path.dirname(__file__), "..", "configs", "chunky.yaml")
@@ -46,13 +71,7 @@ manager = ConnectionManager()
 
 async def broadcast_state():
     """Helper to broadcast current game state to all websocket clients."""
-    state_dict = game_manager.state.model_dump()
-
-    # Enrich state with detailed current question data for easy consumption
-    current_q = game_manager.get_question(game_manager.state.current_question_id)
-    state_dict["current_question"] = current_q.model_dump() if current_q else None
-
-    await manager.broadcast({"type": "state_update", "state": state_dict})
+    await manager.broadcast({"type": "state_update", "state": get_enriched_state()})
 
 
 @app.get("/host")
@@ -73,6 +92,15 @@ async def join():
         return HTMLResponse(content=f.read())
 
 
+@app.get("/results")
+@app.get("/results/")
+async def results():
+    """Serve the results page."""
+    results_path = os.path.join(os.path.dirname(__file__), "..", "ui", "index.html")
+    with open(results_path) as f:
+        return HTMLResponse(content=f.read())
+
+
 @app.get("/health")
 async def health():
     """Health check endpoint."""
@@ -84,11 +112,8 @@ async def websocket_endpoint(websocket: WebSocket, player_id: str | None = None)
     await manager.connect(websocket)
 
     # Send current state to newly connected client immediately
-    state_dict = game_manager.state.model_dump()
-    current_q = game_manager.get_question(game_manager.state.current_question_id)
-    state_dict["current_question"] = current_q.model_dump() if current_q else None
     try:
-        await websocket.send_json({"type": "state_update", "state": state_dict})
+        await websocket.send_json({"type": "state_update", "state": get_enriched_state()})
     except Exception:
         manager.disconnect(websocket)
         return
@@ -98,7 +123,10 @@ async def websocket_endpoint(websocket: WebSocket, player_id: str | None = None)
             data = await websocket.receive_json()
             action = data.get("action")
 
-            if action == "join":
+            if action == "ping":
+                continue
+
+            elif action == "join":
                 pid = data.get("player_id")
                 name = data.get("name")
                 room_code = data.get("room_code", "").strip().upper()
@@ -144,6 +172,10 @@ async def websocket_endpoint(websocket: WebSocket, player_id: str | None = None)
 
             elif action == "next_question":
                 game_manager.return_to_board()
+                await broadcast_state()
+
+            elif action == "show_results":
+                game_manager.show_results()
                 await broadcast_state()
 
             elif action == "end_game":

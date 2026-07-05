@@ -96,8 +96,17 @@ class GameManager:
         if not player or not question:
             return False
 
+        if question.actual_points is not None:
+            if question.actual_points < 0:
+                points_change = question.actual_points
+            else:
+                points_change = question.actual_points if correct else -question.actual_points
+        else:
+            points_change = question.points if correct else -question.points
+
+        player.score += points_change
+
         if correct:
-            player.score += question.points
             question.completed = True
             self.state.current_question_id = None
             self.state.current_buzzer = None
@@ -110,7 +119,6 @@ class GameManager:
             else:
                 self.state.status = "board"
         else:
-            player.score -= question.points
             self.state.buzzed_players.append(player.id)
             self.state.current_buzzer = None
             self.state.buzzer_locked = False
@@ -138,9 +146,16 @@ class GameManager:
         self.state.status = "revealed"
         return True
 
+    def show_results(self) -> bool:
+        """Transitions state to results mid-game."""
+        if self.state.status == "board":
+            self.state.status = "results"
+            return True
+        return False
+
     def return_to_board(self) -> bool:
-        """Returns to board after answer is revealed."""
-        if self.state.status != "revealed":
+        """Returns to board after answer is revealed or results are shown."""
+        if self.state.status not in ["revealed", "results"]:
             return False
 
         self.state.current_question_id = None
@@ -155,7 +170,7 @@ class GameManager:
         return True
 
     def end_game(self) -> bool:
-        """Ends the game, showing the final scoreboard."""
+        """Ends the game early, showing the final scoreboard."""
         self.state.status = "ended"
         return True
 

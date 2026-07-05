@@ -22,4 +22,5 @@ categories:
       - question: string
         answer: string
         points: int
+        actual_points: Optional[int] # Optional, used for deducting points in special cases 
 ```

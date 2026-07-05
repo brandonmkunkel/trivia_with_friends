@@ -1,271 +1,414 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trivia with Friends</title>
     <!-- Premium Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
     <div id="app" class="app-container">
-        
-        <!-- ==================== SCREEN (TV) VIEW ==================== -->
-        <div id="view-screen" class="role-view hidden">
-            <!-- Lobby State -->
-            <div id="screen-lobby" class="state-section hidden">
-                <header class="lobby-header">
-                    <h1 class="logo-text">Trivia with Friends</h1>
-                    <div class="join-info">
-                        <p>Join on your phone at: <span id="screen-join-url" class="glow-text">Loading...</span></p>
-                        <p style="margin-top: 10px; font-size: 2.2rem; font-weight: 800;">Room Code: <span id="screen-room-code" class="glow-text" style="color: var(--accent);">----</span></p>
-                    </div>
-                </header>
-                <div class="lobby-content">
-                    <div class="players-panel">
-                        <h2>Connected Players (<span id="screen-player-count">0</span>)</h2>
-                        <ul id="screen-players-list" class="players-grid"></ul>
-                    </div>
-                    <div class="game-info-panel">
-                        <div class="game-badge" id="screen-game-name">Loading Game...</div>
-                        <p class="lobby-status-msg">Waiting for host to start the game...</p>
-                    </div>
-                </div>
+      <!-- ==================== SCREEN (TV) VIEW ==================== -->
+      <div id="view-screen" class="role-view hidden">
+        <!-- Lobby State -->
+        <div id="screen-lobby" class="state-section hidden">
+          <header class="lobby-header">
+            <h1 class="logo-text">Games with Friends</h1>
+            <div class="join-info">
+              <p>
+                Join on your phone at:
+                <span id="screen-join-url" class="glow-text">Loading...</span>
+              </p>
+              <p style="margin-top: 10px; font-size: 2.2rem; font-weight: 800">
+                Room Code:
+                <span
+                  id="screen-room-code"
+                  class="glow-text"
+                  style="color: var(--accent)"
+                  >----</span
+                >
+              </p>
             </div>
-
-            <!-- Board State -->
-            <div id="screen-board" class="state-section hidden">
-                <div class="board-header">
-                    <h1 class="game-title-small" id="screen-board-game-name">Trivia</h1>
-                    <div class="scores-bar" id="screen-board-scores"></div>
-                </div>
-                <div class="jeopardy-grid-container">
-                    <div id="screen-jeopardy-grid" class="jeopardy-grid"></div>
-                </div>
+          </header>
+          <div class="lobby-content">
+            <div class="players-panel">
+              <h2>
+                Connected Players (<span id="screen-player-count">0</span>)
+              </h2>
+              <ul id="screen-players-list" class="players-grid"></ul>
             </div>
-
-            <!-- Question & Buzz States -->
-            <div id="screen-question" class="state-section hidden">
-                <div class="question-header">
-                    <div class="category-indicator" id="screen-question-category">Category Name</div>
-                    <div class="points-indicator" id="screen-question-points">200 Points</div>
-                </div>
-                <div class="question-body">
-                    <p class="question-text" id="screen-question-text">Question loading...</p>
-                    <div id="screen-buzzed-overlay" class="buzzed-overlay hidden">
-                        <div class="buzzed-card">
-                            <span class="buzz-icon">⚡</span>
-                            <span class="buzzer-name" id="screen-buzzer-player-name">Player Name</span>
-                            <span class="buzzer-action-msg">is answering!</span>
-                        </div>
-                    </div>
-                    <div id="screen-answer-overlay" class="answer-overlay hidden">
-                        <h3 class="answer-title">Answer:</h3>
-                        <p class="answer-text" id="screen-answer-text">Answer loading...</p>
-                    </div>
-                </div>
-                <div class="scores-footer" id="screen-question-scores"></div>
+            <div class="game-info-panel">
+              <div class="game-badge" id="screen-game-name">
+                Loading Game...
+              </div>
+              <p class="lobby-status-msg">
+                Waiting for host to start the game...
+              </p>
             </div>
-
-            <!-- Game Ended State -->
-            <div id="screen-ended" class="state-section hidden">
-                <div class="ended-card">
-                    <h1 class="glow-text trophy-icon">🏆</h1>
-                    <h2>Game Over!</h2>
-                    <p>Final Standings</p>
-                    <div id="screen-final-standings" class="final-standings-list"></div>
-                </div>
-            </div>
+          </div>
         </div>
 
-
-        <!-- ==================== PLAYER (PHONE) VIEW ==================== -->
-        <div id="view-player" class="role-view hidden">
-            <!-- Setup/Join Screen -->
-            <div id="player-setup" class="state-section hidden">
-                <div class="glass-form-card">
-                    <h1 class="form-title">Join Game</h1>
-                    <div class="form-group">
-                        <label for="player-room-input">Room Code</label>
-                        <input type="text" id="player-room-input" placeholder="e.g. ABCD" maxlength="4" style="text-transform: uppercase;">
-                    </div>
-                    <div class="form-group">
-                        <label for="player-name-input">Your Name</label>
-                        <input type="text" id="player-name-input" placeholder="e.g. John Doe" maxlength="15">
-                    </div>
-
-                    <button id="player-join-btn" class="btn btn-primary">Join Lobby</button>
-                </div>
-            </div>
-
-            <!-- Player Lobby Screen -->
-            <div id="player-lobby" class="state-section hidden">
-                <div class="player-panel-card">
-                    <h2>Welcome, <span id="player-my-name" class="glow-text">...</span></h2>
-
-                    <div class="status-box">
-                        <div class="pulse-indicator"></div>
-                        <p>Connected. Waiting for host to start...</p>
-                    </div>
-                    <div class="player-count-indicator">
-                        Players in lobby: <span id="player-lobby-count">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Player Board Screen -->
-            <div id="player-board" class="state-section hidden">
-                <div class="player-panel-card">
-                    <div class="score-display">Your Score: <span id="player-my-score" class="glow-text">0</span></div>
-                    <h3>Look at the TV Screen!</h3>
-                    <p>The host is choosing a question from the board.</p>
-                </div>
-            </div>
-
-            <!-- Player Question Screen (Buzzer) -->
-            <div id="player-question" class="state-section hidden">
-                <div class="player-question-header">
-                    <div id="player-q-category">Category</div>
-                    <div id="player-q-points">100 pts</div>
-                </div>
-                <div class="player-question-body">
-                    <p class="player-question-text" id="player-q-text">Loading question...</p>
-                </div>
-                <div class="buzzer-container">
-                    <button id="player-buzz-btn" class="buzz-button">
-                        <span class="buzz-inner">BUZZ</span>
-                    </button>
-                </div>
-                <div id="player-status-message" class="status-msg">Press to buzz in!</div>
-            </div>
-
-            <!-- Player Buzzed State -->
-            <div id="player-buzzed" class="state-section hidden">
-                <div class="player-panel-card text-center">
-                    <div id="player-buzz-banner" class="buzz-banner">
-                        <h2 id="player-buzz-title">You Buzzed!</h2>
-                        <p id="player-buzz-subtitle">Answer the question out loud.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Player Revealed State -->
-            <div id="player-revealed" class="state-section hidden">
-                <div class="player-panel-card text-center">
-                    <h3>Answer Revealed</h3>
-                    <p class="answer-highlight" id="player-revealed-answer">...</p>
-                    <p>Waiting for the board...</p>
-                </div>
-            </div>
-
-            <!-- Player Ended State -->
-            <div id="player-ended" class="state-section hidden">
-                <div class="player-panel-card text-center">
-                    <h2>Game Finished!</h2>
-                    <div class="final-score-box">
-                        <p>Your Final Score:</p>
-                        <h1 id="player-final-score" class="glow-text">0</h1>
-                    </div>
-                    <p>Check the TV for final standings.</p>
-                </div>
-            </div>
+        <!-- Board State -->
+        <div id="screen-board" class="state-section hidden">
+          <div class="board-header">
+            <h1 class="game-title-small" id="screen-board-game-name">Trivia</h1>
+            <div class="scores-bar" id="screen-board-scores"></div>
+          </div>
+          <div class="jeopardy-grid-container">
+            <div id="screen-jeopardy-grid" class="jeopardy-grid"></div>
+          </div>
         </div>
 
-
-        <!-- ==================== HOST VIEW ==================== -->
-        <div id="view-host" class="role-view hidden">
-            <header class="host-header">
-                <h2>Host Control Panel</h2>
-                <div class="connection-status">
-                    Status: <span id="host-connection-status" class="status-online">Online</span>
-                </div>
-            </header>
-
-            <main class="host-main-content">
-                <!-- Host Lobby State -->
-                <div id="host-lobby" class="state-section hidden">
-                    <div class="control-card">
-                        <h3>Lobby Management</h3>
-                        <p>Players joined: <span id="host-player-count">0</span></p>
-                        <ul id="host-players-list" class="host-players-list"></ul>
-                        <button id="host-start-game-btn" class="btn btn-success btn-large">Start Trivia Game</button>
-                    </div>
-                </div>
-
-                <!-- Host Board State -->
-                <div id="host-board" class="state-section hidden">
-                    <div class="host-grid-guidance">
-                        <p>💡 Click on any available category point value to select that question for play.</p>
-                    </div>
-                    <div id="host-jeopardy-grid" class="jeopardy-grid host-grid"></div>
-                </div>
-
-                <!-- Host Question State -->
-                <div id="host-question" class="state-section hidden">
-                    <div class="control-card question-details">
-                        <div class="meta-row">
-                            <span class="cat-badge" id="host-question-category">Category</span>
-                            <span class="pts-badge" id="host-question-points">100 Points</span>
-                        </div>
-                        <h3 class="host-label">Question Text:</h3>
-                        <p class="question-preview" id="host-question-text">Loading question...</p>
-                        
-                        <h3 class="host-label">Correct Answer:</h3>
-                        <p class="answer-preview" id="host-question-answer">Loading answer...</p>
-                        
-                        <div class="control-actions">
-                            <button id="host-reveal-btn" class="btn btn-warning">Reveal Answer (No Points)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Host Buzzed State -->
-                <div id="host-buzzed" class="state-section hidden">
-                    <div class="control-card buzzer-action-card">
-                        <div class="buzz-alert">
-                            <span class="pulse-ring"></span>
-                            ⚡ <span id="host-buzzer-player-name">Player Name</span> has buzzed in!
-                        </div>
-                        
-                        <div class="host-label">Their Answer Status:</div>
-                        <div class="scoring-actions">
-                            <button id="host-correct-btn" class="btn btn-success btn-large">Correct (+Points)</button>
-                            <button id="host-incorrect-btn" class="btn btn-danger btn-large">Incorrect (-Points)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Host Revealed State -->
-                <div id="host-revealed" class="state-section hidden">
-                    <div class="control-card">
-                        <h3>Answer Revealed</h3>
-                        <p>The correct answer is being shown on the TV.</p>
-                        <button id="host-next-btn" class="btn btn-primary">Return to Board</button>
-                    </div>
-                </div>
-
-                <!-- Host Ended State -->
-                <div id="host-ended" class="state-section hidden">
-                    <div class="control-card">
-                        <h3>Game Ended</h3>
-                        <p>Scores are finalized on the TV screen.</p>
-                        <button id="host-restart-btn" class="btn btn-danger btn-large">Reset & Play Again</button>
-                    </div>
-                </div>
-            </main>
-
-            <!-- Scoreboard Sidebar for Host -->
-            <aside class="host-sidebar" id="host-sidebar-panel">
-                <h3>Live Scores</h3>
-                <ul id="host-sidebar-scores" class="sidebar-scores-list"></ul>
-            </aside>
+        <!-- Question & Buzz States -->
+        <div id="screen-question" class="state-section hidden">
+          <div class="question-header">
+            <div class="category-indicator" id="screen-question-category">
+              Category Name
+            </div>
+            <div class="points-indicator" id="screen-question-points">
+              200 Points
+            </div>
+          </div>
+          <div class="question-body">
+            <p class="question-text" id="screen-question-text">
+              Question loading...
+            </p>
+            <div id="screen-buzzed-overlay" class="buzzed-overlay hidden">
+              <div class="buzzed-card">
+                <span class="buzz-icon">⚡</span>
+                <span class="buzzer-name" id="screen-buzzer-player-name"
+                  >Player Name</span
+                >
+                <span class="buzzer-action-msg">is answering!</span>
+              </div>
+            </div>
+            <div id="screen-answer-overlay" class="answer-overlay hidden">
+              <h3 class="answer-title">Answer:</h3>
+              <p class="answer-text" id="screen-answer-text">
+                Answer loading...
+              </p>
+            </div>
+          </div>
+          <div class="scores-footer" id="screen-question-scores"></div>
         </div>
 
+        <!-- Game Ended State -->
+        <div id="screen-ended" class="state-section hidden">
+          <div class="ended-card">
+            <h1 class="glow-text trophy-icon">🏆</h1>
+            <h2>Game Over!</h2>
+            <p>Final Standings</p>
+            <div id="screen-final-standings" class="final-standings-list"></div>
+          </div>
+        </div>
+
+        <!-- Results State (Mid-game or Live link) -->
+        <div id="screen-results" class="state-section hidden">
+          <div class="ended-card">
+            <h1 class="glow-text trophy-icon">📊</h1>
+            <h2 id="results-title-header">Current Standings</h2>
+            <div id="screen-mid-standings" class="final-standings-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PLAYER (PHONE) VIEW ==================== -->
+      <div id="view-player" class="role-view hidden">
+        <!-- Setup/Join Screen -->
+        <div id="player-setup" class="state-section hidden">
+          <div class="glass-form-card">
+            <h1 class="form-title">Join Game</h1>
+            <div class="form-group">
+              <label for="player-room-input">Room Code</label>
+              <input
+                type="text"
+                id="player-room-input"
+                placeholder="e.g. ABCD"
+                maxlength="4"
+                style="text-transform: uppercase"
+              />
+            </div>
+            <div class="form-group">
+              <label for="player-name-input">Your Name</label>
+              <input
+                type="text"
+                id="player-name-input"
+                placeholder="e.g. John Doe"
+                maxlength="15"
+              />
+            </div>
+
+            <button id="player-join-btn" class="btn btn-primary">
+              Join Lobby
+            </button>
+          </div>
+        </div>
+
+        <!-- Player Lobby Screen -->
+        <div id="player-lobby" class="state-section hidden">
+          <div class="player-panel-card">
+            <h2>
+              Welcome, <span id="player-my-name" class="glow-text">...</span>
+            </h2>
+
+            <div class="status-box">
+              <div class="pulse-indicator"></div>
+              <p>Connected. Waiting for host to start...</p>
+            </div>
+            <div class="player-count-indicator">
+              Players in lobby: <span id="player-lobby-count">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Board Screen -->
+        <div id="player-board" class="state-section hidden">
+          <div class="player-panel-card">
+            <div class="score-display">
+              Your Score: <span id="player-my-score" class="glow-text">0</span>
+            </div>
+            <h3>Look at the TV Screen!</h3>
+            <p>The host is choosing a question from the board.</p>
+          </div>
+        </div>
+
+        <!-- Player Question Screen (Buzzer) -->
+        <div id="player-question" class="state-section hidden">
+          <div class="player-question-header">
+            <div id="player-q-category">Category</div>
+            <div id="player-q-points">100 pts</div>
+          </div>
+          <div class="player-question-body">
+            <p class="player-question-text" id="player-q-text">
+              Loading question...
+            </p>
+          </div>
+          <div class="buzzer-container">
+            <button id="player-buzz-btn" class="buzz-button">
+              <span class="buzz-inner">BUZZ</span>
+            </button>
+          </div>
+          <div id="player-status-message" class="status-msg">
+            Press to buzz in!
+          </div>
+        </div>
+
+        <!-- Player Buzzed State -->
+        <div id="player-buzzed" class="state-section hidden">
+          <div class="player-panel-card text-center">
+            <div id="player-buzz-banner" class="buzz-banner">
+              <h2 id="player-buzz-title">You Buzzed!</h2>
+              <p id="player-buzz-subtitle">Answer the question out loud.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Revealed State -->
+        <div id="player-revealed" class="state-section hidden">
+          <div class="player-panel-card text-center">
+            <h3>Answer Revealed</h3>
+            <p class="answer-highlight" id="player-revealed-answer">...</p>
+            <p>Waiting for the board...</p>
+          </div>
+        </div>
+
+        <!-- Player Ended State -->
+        <div id="player-ended" class="state-section hidden">
+          <div class="player-panel-card text-center">
+            <h2>Game Finished!</h2>
+            <div class="final-score-box">
+              <p>Your Final Score:</p>
+              <h1 id="player-final-score" class="glow-text">0</h1>
+            </div>
+            <p>Check the TV for final standings.</p>
+          </div>
+        </div>
+
+        <!-- Player Results State -->
+        <div id="player-results" class="state-section hidden">
+          <div class="player-panel-card text-center">
+            <h3>Current Standings</h3>
+            <p>Look at the TV screen for the leaderboard!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== HOST VIEW ==================== -->
+      <div id="view-host" class="role-view hidden">
+        <header class="host-header">
+          <h2>Host Control Panel</h2>
+          <div
+            class="host-header-actions"
+            style="display: flex; align-items: center; gap: 15px"
+          >
+            <button id="host-show-results-btn" class="btn btn-warning">
+              Show Standings on TV
+            </button>
+            <button id="host-end-game-btn" class="btn btn-danger">
+              End Game Early
+            </button>
+            <button id="host-global-reset-btn" class="btn btn-danger">
+              Reset Game
+            </button>
+            <div class="connection-status">
+              Status:
+              <span id="host-connection-status" class="status-online"
+                >Online</span
+              >
+            </div>
+          </div>
+        </header>
+
+        <main class="host-main-content">
+          <!-- Host Lobby State -->
+          <div id="host-lobby" class="state-section hidden">
+            <div class="control-card">
+              <h3>Lobby Management</h3>
+              <p>Players joined: <span id="host-player-count">0</span></p>
+              <ul id="host-players-list" class="host-players-list"></ul>
+              <button
+                id="host-start-game-btn"
+                class="btn btn-success btn-large"
+              >
+                Start Trivia Game
+              </button>
+            </div>
+          </div>
+
+          <!-- Host Board State -->
+          <div id="host-board" class="state-section hidden">
+            <div class="host-grid-guidance">
+              <p>
+                💡 Click on any available category point value to select that
+                question for play.
+              </p>
+            </div>
+            <div id="host-jeopardy-grid" class="jeopardy-grid host-grid"></div>
+          </div>
+
+          <!-- Host Question State -->
+          <div id="host-question" class="state-section hidden">
+            <div class="control-card question-details">
+              <div class="meta-row">
+                <span class="cat-badge" id="host-question-category"
+                  >Category</span
+                >
+                <span class="pts-badge" id="host-question-points"
+                  >100 Points</span
+                >
+              </div>
+              <h3 class="host-label">Question Text:</h3>
+              <p class="question-preview" id="host-question-text">
+                Loading question...
+              </p>
+
+              <h3 class="host-label">Correct Answer:</h3>
+              <p class="answer-preview" id="host-question-answer">
+                Loading answer...
+              </p>
+
+              <div class="control-actions">
+                <button id="host-reveal-btn" class="btn btn-warning">
+                  Reveal Answer (No Points)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Host Buzzed State -->
+          <div id="host-buzzed" class="state-section hidden">
+            <div class="control-card buzzer-action-card">
+              <div class="buzz-alert">
+                <span class="pulse-ring"></span>
+                ⚡ <span id="host-buzzer-player-name">Player Name</span> has
+                buzzed in!
+              </div>
+
+              <div class="host-label">Their Answer Status:</div>
+              <div class="scoring-actions">
+                <button id="host-correct-btn" class="btn btn-success btn-large">
+                  Correct (+Points)
+                </button>
+                <button
+                  id="host-incorrect-btn"
+                  class="btn btn-danger btn-large"
+                >
+                  Incorrect (-Points)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Host Revealed State -->
+          <div id="host-revealed" class="state-section hidden">
+            <div class="control-card">
+              <h3>Answer Revealed</h3>
+              <p>The correct answer is being shown on the TV.</p>
+              <button id="host-next-btn" class="btn btn-primary">
+                Return to Board
+              </button>
+            </div>
+          </div>
+
+          <!-- Host Results State -->
+          <div id="host-results" class="state-section hidden">
+            <div class="control-card">
+              <h3>Results Displayed</h3>
+              <p>Current standings are being shown on the TV screen.</p>
+              <button
+                id="host-results-back-btn"
+                class="btn btn-primary btn-large"
+              >
+                Return to Board
+              </button>
+            </div>
+          </div>
+
+          <!-- Host Ended State -->
+          <div id="host-ended" class="state-section hidden">
+            <div class="control-card">
+              <h3>Game Ended</h3>
+              <p>Scores are finalized on the TV screen.</p>
+              <button id="host-restart-btn" class="btn btn-danger btn-large">
+                Reset & Play Again
+              </button>
+            </div>
+          </div>
+        </main>
+
+        <!-- Scoreboard Sidebar for Host -->
+        <aside class="host-sidebar" id="host-sidebar-panel">
+          <h3>Live Scores</h3>
+          <ul id="host-sidebar-scores" class="sidebar-scores-list"></ul>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="custom-confirm-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h3 id="custom-confirm-title">Reset Game</h3>
+        <p id="custom-confirm-message">
+          Are you sure you want to reset the current game and return to the lobby?
+        </p>
+        <div class="modal-actions">
+          <button id="custom-confirm-cancel-btn" class="btn btn-secondary">
+            Cancel
+          </button>
+          <button id="custom-confirm-ok-btn" class="btn btn-danger">
+            Reset
+          </button>
+        </div>
+      </div>
     </div>
 
     <script src="/app.js"></script>
-</body>
+  </body>
 </html>

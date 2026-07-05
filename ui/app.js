@@ -9,11 +9,13 @@ if (!playerId) {
 const urlParams = new URLSearchParams(window.location.search);
 let role = urlParams.get("role");
 if (!role) {
-  if (
-    window.location.pathname.endsWith("/host") ||
-    window.location.pathname.endsWith("/host/")
-  ) {
+  const path = window.location.pathname;
+  if (path.endsWith("/host") || path.endsWith("/host/")) {
     role = "host";
+  } else if (path.endsWith("/results") || path.endsWith("/results/")) {
+    role = "results";
+  } else if (path.endsWith("/join") || path.endsWith("/join/")) {
+    role = "player";
   } else {
     const isMobile =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -25,7 +27,9 @@ if (!role) {
 }
 
 // State management
+// State management
 let ws;
+let pingInterval = null;
 let lastReceivedState = null;
 const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const wsUrl = `${wsProtocol}//${window.location.host}/ws?player_id=${playerId}`;
@@ -43,6 +47,14 @@ function connect() {
         hostStatus.className = "status-online";
       }
     }
+
+    // Heartbeat ping to keep connection alive
+    if (pingInterval) clearInterval(pingInterval);
+    pingInterval = setInterval(() => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        send({ action: "ping" });
+      }
+    }, 10000);
 
     // Auto-rejoin if player has already set their details
     const savedName = localStorage.getItem("trivia_player_name");
@@ -81,8 +93,14 @@ function connect() {
     }
   };
 
-  ws.onclose = () => {
-    console.log("WebSocket disconnected, reconnecting in 2 seconds...");
+  ws.onclose = (event) => {
+    if (pingInterval) {
+      clearInterval(pingInterval);
+      pingInterval = null;
+    }
+    console.log(
+      `WebSocket disconnected (code: ${event.code}, reason: "${event.reason}"), reconnecting in 2 seconds...`,
+    );
     if (role === "host") {
       const hostStatus = document.getElementById("host-connection-status");
       if (hostStatus) {
@@ -116,6 +134,9 @@ function updateUI(state) {
   if (role === "screen") {
     document.getElementById("view-screen").classList.remove("hidden");
     renderScreen(state);
+  } else if (role === "results") {
+    document.getElementById("view-screen").classList.remove("hidden");
+    renderResultsScreenOnly(state);
   } else if (role === "host") {
     document.getElementById("view-host").classList.remove("hidden");
     renderHost(state);
@@ -125,6 +146,33 @@ function updateUI(state) {
   }
 }
 
+function renderResultsScreenOnly(state) {
+  document.getElementById("screen-lobby").classList.add("hidden");
+  document.getElementById("screen-board").classList.add("hidden");
+  document.getElementById("screen-question").classList.add("hidden");
+  document.getElementById("screen-ended").classList.add("hidden");
+  document.getElementById("screen-results").classList.remove("hidden");
+
+  document.getElementById("results-title-header").innerText =
+    state.status === "ended" ? "Final Standings" : "Live Leaderboard";
+
+  const standingsList = document.getElementById("screen-mid-standings");
+  standingsList.innerHTML = "";
+  const sorted = [...state.players].sort((a, b) => b.score - a.score);
+  sorted.forEach((p, idx) => {
+    const item = document.createElement("div");
+    item.className = "standing-item";
+    item.innerHTML = `
+        <div>
+            <span class="standing-rank">#${idx + 1}</span>
+            <span>${p.name}</span>
+        </div>
+        <div class="glow-text">${p.score} pts</div>
+    `;
+    standingsList.appendChild(item);
+  });
+}
+
 /* ==================== SCREEN RENDERING LOGIC ==================== */
 function renderScreen(state) {
   // Hide all sub-sections
@@ -132,11 +180,15 @@ function renderScreen(state) {
   document.getElementById("screen-board").classList.add("hidden");
   document.getElementById("screen-question").classList.add("hidden");
   document.getElementById("screen-ended").classList.add("hidden");
+  document.getElementById("screen-results").classList.add("hidden");
 
   if (state.status === "lobby") {
     document.getElementById("screen-lobby").classList.remove("hidden");
+    const protocol = window.location.protocol;
+    const hostIp = state.host_ip || window.location.hostname;
+    const port = window.location.port ? `:${window.location.port}` : '';
     document.getElementById("screen-join-url").innerText =
-      `${window.location.protocol}//${window.location.host}/join`;
+      `${protocol}//${hostIp}${port}/join`;
     document.getElementById("screen-room-code").innerText =
       state.room_code || "----";
     document.getElementById("screen-game-name").innerText = state.name;
@@ -216,6 +268,25 @@ function renderScreen(state) {
       document.getElementById("screen-question-scores"),
       state.players,
     );
+  } else if (state.status === "results") {
+    document.getElementById("screen-results").classList.remove("hidden");
+    document.getElementById("results-title-header").innerText =
+      "Current Standings";
+    const standings = document.getElementById("screen-mid-standings");
+    standings.innerHTML = "";
+    const sortedPlayers = [...state.players].sort((a, b) => b.score - a.score);
+    sortedPlayers.forEach((p, idx) => {
+      const item = document.createElement("div");
+      item.className = "standing-item";
+      item.innerHTML = `
+                <div>
+                    <span class="standing-rank">#${idx + 1}</span>
+                    <span>${p.name}</span>
+                </div>
+                <div class="glow-text">${p.score} pts</div>
+            `;
+      standings.appendChild(item);
+    });
   } else if (state.status === "ended") {
     document.getElementById("screen-ended").classList.remove("hidden");
     const standings = document.getElementById("screen-final-standings");
@@ -380,6 +451,8 @@ function renderPlayer(state) {
     document.getElementById("player-revealed-answer").innerText = q
       ? q.answer
       : "...";
+  } else if (state.status === "results") {
+    showPlayerSection("player-results");
   } else if (state.status === "ended") {
     showPlayerSection("player-ended");
     document.getElementById("player-final-score").innerText = me.score;
@@ -395,6 +468,7 @@ function showPlayerSection(sectionId) {
     "player-buzzed",
     "player-revealed",
     "player-ended",
+    "player-results",
   ];
   sections.forEach((id) => {
     const el = document.getElementById(id);
@@ -417,6 +491,7 @@ function renderHost(state) {
     "host-question",
     "host-buzzed",
     "host-revealed",
+    "host-results",
     "host-ended",
   ];
   sections.forEach((id) => {
@@ -479,6 +554,8 @@ function renderHost(state) {
       : "Someone";
   } else if (state.status === "revealed") {
     document.getElementById("host-revealed").classList.remove("hidden");
+  } else if (state.status === "results") {
+    document.getElementById("host-results").classList.remove("hidden");
   } else if (state.status === "ended") {
     document.getElementById("host-ended").classList.remove("hidden");
   }
@@ -573,6 +650,74 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initialize Connection
-  connect();
+  // 9. Show Standings button (Host)
+  const showResultsBtn = document.getElementById("host-show-results-btn");
+  if (showResultsBtn) {
+    showResultsBtn.addEventListener("click", () => {
+      send({ action: "show_results" });
+    });
+  }
+
+  // 10. End Game Early button (Host)
+  const endGameBtn = document.getElementById("host-end-game-btn");
+  if (endGameBtn) {
+    endGameBtn.addEventListener("click", () => {
+      send({ action: "end_game" });
+    });
+  }
+
+  // 11. Results Back button (Host)
+  const resultsBackBtn = document.getElementById("host-results-back-btn");
+  if (resultsBackBtn) {
+    resultsBackBtn.addEventListener("click", () => {
+      send({ action: "next_question" });
+    });
+  }
+
+  // 12. Global Reset button (Host)
+  const globalResetBtn = document.getElementById("host-global-reset-btn");
+  if (globalResetBtn) {
+    globalResetBtn.addEventListener("click", () => {
+      showConfirm(
+        "Reset Game",
+        "Are you sure you want to reset the current game and return to the lobby?",
+        () => {
+          send({ action: "restart_game" });
+        },
+      );
+    });
+  }
+
+  function showConfirm(title, message, onConfirm) {
+  const modal = document.getElementById("custom-confirm-modal");
+  if (!modal) {
+    if (confirm(message)) onConfirm();
+    return;
+  }
+
+  document.getElementById("custom-confirm-title").innerText = title;
+  document.getElementById("custom-confirm-message").innerText = message;
+  modal.classList.remove("hidden");
+
+  const okBtn = document.getElementById("custom-confirm-ok-btn");
+  const cancelBtn = document.getElementById("custom-confirm-cancel-btn");
+
+  // Re-bind click event listeners to prevent duplicate triggers
+  const newOkBtn = okBtn.cloneNode(true);
+  const newCancelBtn = cancelBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+  newOkBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    onConfirm();
+  });
+
+  newCancelBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+}
+
+// Initialize Connection
+connect();
 });

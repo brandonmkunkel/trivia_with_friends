@@ -6,6 +6,7 @@ class Question(BaseModel):
     question: str
     answer: str
     points: int
+    actual_points: int | None = None
     completed: bool = False
 
 

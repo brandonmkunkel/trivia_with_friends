@@ -45,6 +45,18 @@ Requirements:
 - The buttons and text should be easily legible.
 - Everything should fit in a mobile aspect ratio. 
 
+### Player Screen - On Reset
+
+When the game is reset, the player should be returned to the `/$HOST/join` page and their state cleared from the game. They should have to rejoin. 
+
+### Player Screen - End of Game
+
+When the game ends, the player that wins should see that they win. 
+
+The winner's screen should show:
+  * Show confetti animation falling from the screen
+  * Show the point total with “You are the winner with $POINTS"
+
 ## Results Screen
 
 **URL:**  `/$HOST/results`

@@ -27,9 +27,10 @@ categories:
       - question: This food item has to be shared equally, you can't just eat all the ones with the meat and cheese
         answer: Fully Loaded Nachos
         points: 200
-      - question: This soup needs to be cold otherwise you will burn your mouth
-        answer: Gazpacho
+      - question: IT'S A CHUNKY
+        answer: HE IS GOBBLING UP YOUR POINTS
         points: 300
+        actual_points: -300
       - question: This food item has been banned from Truffoni's
         answer: Sloppy Steak
         points: 400
@@ -64,13 +65,13 @@ categories:
       - question: This car company put together a focus group to learn more about steering wheel preferences
         answer: Ford
         points: 300
-      - question: IT'S A CHUNKY
-        answer: HE IS GOBBLING UP YOUR POINTS
-        points: 400
-        actual_points: -400
       - question: This high-risk career may cause emotional distress and distracted driving.
         answer: Tables
+        points: 400
+      - question: IT'S A CHUNKY
+        answer: HE IS GOBBLING UP YOUR POINTS
         points: 500
+        actual_points: -500
   - name: He Did What???
     questions:
       - question: On the adult ghost tour you can say this one word

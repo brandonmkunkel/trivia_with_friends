@@ -18,7 +18,7 @@ function startConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const colors = ["#ffd700", "#ff4500", "#ff00ff", "#00ff00", "#00ffff", "#ffffff", "#ff8c00"];
+  const colors = ["#C23B22", "#E5A93C", "#DE8A4F", "#D6A2A8", "#478ECC", "#FFFDF6"];
   const particles = [];
   const particleCount = 150;
 

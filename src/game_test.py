@@ -13,7 +13,7 @@ def game_mgr():
 
 
 def test_initial_state(game_mgr):
-    assert game_mgr.state.name == "Chunky"
+    assert game_mgr.state.name == "I Think You Should Leave"
     assert game_mgr.state.game_type == "jeopardy"
     assert game_mgr.state.status == "lobby"
     assert len(game_mgr.state.categories) == 5

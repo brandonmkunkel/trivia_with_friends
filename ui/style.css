@@ -103,6 +103,20 @@ body {
   transform: translateY(-2px);
 }
 
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: none;
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
 .btn-warning {
   background: linear-gradient(135deg, var(--accent) 0%, #78350f 100%);
   box-shadow: 0 4px 15px var(--accent-glow);
